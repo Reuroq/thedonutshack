@@ -34,6 +34,24 @@ ICONS = {
 def ic(n): return ICONS.get(n, ICONS["star"])
 
 _GLAZE = ["#F8D7DD", "#FBE7C9", "#E7DBF6", "#FDE6A8", "#E9C8B6", "#CDEBDD", "#F6C9D5", "#E5D4F2", "#F3D9B0", "#F8CEDA", "#EAD7C2", "#F4DCC3"]
+FLAVOR_IMG = {
+    "Strawberry Champagne": "flavor-strawberry", "Vanilla Bean Dream": "flavor-vanilla",
+    "Lavender Honey": "flavor-lavender", "Lemon Meringue": "flavor-lemon",
+    "Salted Caramel Cocoa": "flavor-caramel", "Pistachio Rose": "flavor-pistachio",
+    "Cookies & Cream": "flavor-cookies", "Matcha White Chocolate": "flavor-matcha",
+    "Maple Brown Butter": "flavor-maple", "Birthday Cake": "flavor-birthday",
+    "Biscoff Butter": "flavor-biscoff", "Cinnamon Sugar Classic": "flavor-cinnamon",
+}
+
+
+def _flavor_card(fl, i):
+    slug = FLAVOR_IMG.get(fl["name"])
+    if slug and (ROOT / "static" / "img" / f"{slug}.png").exists():
+        top = f'<div class="flavor-img"><img src="/static/img/{slug}.png" alt="{esc(fl["name"])} artisan donut" loading="lazy"></div>'
+    else:
+        top = f'<div class="flavor-img" style="background:linear-gradient(135deg,{_GLAZE[i%len(_GLAZE)]},#fff)"><span class="flavor-emoji">🍩</span></div>'
+    tags = "".join(f'<span class="tag{" gold" if t in ("Signature", "Fan favorite") else ""}">{esc(t)}</span>' for t in fl["tags"])
+    return f'<div class="flavor">{top}<div class="flavor-body">{tags}<h3>{esc(fl["name"])}</h3><p>{esc(fl["desc"])}</p></div></div>'
 
 
 def _analytics():
@@ -137,14 +155,11 @@ def home():
         f'<a class="svc-card" href="/events" style="text-decoration:none"><div class="svc-ic">{ic(s["icon"])}</div>'
         f'<h3>{esc(s["name"])}</h3><p>{esc(s["short"])}</p></a>' for s in D.SERVICES)
     feat = D.FLAVORS[:6]
-    flavors = "".join(
-        f'<div class="flavor"><div class="flavor-img" style="background:linear-gradient(135deg,{_GLAZE[i%len(_GLAZE)]},#fff)"><span class="flavor-emoji">🍩</span></div>'
-        f'<div class="flavor-body">{"".join(f"<span class=\"tag\">{esc(t)}</span>" for t in fl["tags"])}<h3>{esc(fl["name"])}</h3><p>{esc(fl["desc"])}</p></div></div>'
-        for i, fl in enumerate(feat))
+    flavors = "".join(_flavor_card(fl, i) for i, fl in enumerate(feat))
     body = f"""
 <section class="hero"><div class="wrap"><div class="hero-copy">
 <span class="eyebrow">Las Vegas · mobile donut truck</span>
-<h1>Donuts that are <span class="accent">almost</span> too pretty to eat.</h1>
+<h1>Donuts. Events.<br><span class="accent">Made memorable.</span></h1>
 <p class="lead">{esc(D.SUB)}</p>
 <div class="hero-cta"><a class="btn btn-primary" href="/book">Book the truck {ic("arrow")}</a><a class="btn btn-ghost" href="/donuts">See the flavors</a></div>
 <div class="hero-trust"><span><span class="pip">{ic("heart")}</span> Weddings &amp; donut walls</span><span><span class="pip">{ic("truck")}</span> We come to you</span><span><span class="pip">{ic("sparkle")}</span> Fresh, small-batch</span></div>
@@ -185,11 +200,7 @@ def home():
 
 
 def donuts():
-    cards = "".join(
-        f'<div class="flavor"><div class="flavor-img" style="background:linear-gradient(135deg,{_GLAZE[i%len(_GLAZE)]},#fff)"><span class="flavor-emoji">🍩</span></div>'
-        f'<div class="flavor-body">{"".join(f"<span class=\"tag{(' gold' if t in ('Signature','Fan favorite') else '')}\">{esc(t)}</span>" for t in fl["tags"])}'
-        f'<h3>{esc(fl["name"])}</h3><p>{esc(fl["desc"])}</p></div></div>'
-        for i, fl in enumerate(D.FLAVORS))
+    cards = "".join(_flavor_card(fl, i) for i, fl in enumerate(D.FLAVORS))
     body = f"""
 <header class="page-head"><div class="wrap"><span class="eyebrow">The menu</span>
 <h1>Our donuts</h1><p class="lead center">A rotating, seasonal line-up of small-batch flavors — hand-glazed to order with real ingredients and a little flair. Mix and match your custom dozen.</p></div></header>
