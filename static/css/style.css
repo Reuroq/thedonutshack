@@ -21,6 +21,7 @@ h3{font-size:1.4rem}
 a{color:var(--rose-ink);text-decoration:none}
 p{color:var(--cocoa-soft)}
 img{max-width:100%;display:block}
+svg{width:22px;height:22px;flex-shrink:0}  /* sane default for all inline icons (overridden per-component) */
 .accent{color:var(--rose)}
 .serif{font-family:var(--serif)}
 .eyebrow{font-family:var(--sans);text-transform:uppercase;letter-spacing:.18em;font-size:.74rem;font-weight:800;color:var(--rose);display:inline-block}
