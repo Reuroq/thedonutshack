@@ -1,1 +1,5 @@
-static/seo/\ndata/\n__pycache__/\n.env
+static/seo/
+data/
+__pycache__/
+*.pyc
+.env
