@@ -15,6 +15,16 @@ GA = os.environ.get("DS_GA_ID", "").strip()
 def esc(s): return html.escape(str(s if s is not None else ""), quote=True)
 
 
+def _css_ver():
+    """Content hash of the stylesheet -> ?v= cache-buster, so a CSS change can never be masked
+    by a stale browser/edge cache (the lesson from the oversized-icon bug)."""
+    try:
+        import hashlib
+        return hashlib.md5((ROOT / "static" / "css" / "style.css").read_bytes()).hexdigest()[:8]
+    except Exception:
+        return "1"
+
+
 _S = 'fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"'
 ICONS = {
     "truck": f'<svg viewBox="0 0 24 24" {_S}><path d="M3 6h11v9H3zM14 9h4l3 3v3h-7zM7 18.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM18 18.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>',
@@ -112,7 +122,7 @@ def page(title, desc, path, body, jsonld=None, og="website"):
 <meta property="og:site_name" content="{esc(D.NAME)}"><meta property="og:image" content="{BASE}/static/img/hero.png">
 <meta name="twitter:card" content="summary_large_image"><meta name="theme-color" content="#E27D95">
 <meta name="robots" content="index,follow">{_fonts()}
-<link rel="stylesheet" href="/static/css/style.css">{ld}{_analytics()}
+<link rel="stylesheet" href="/static/css/style.css?v={_css_ver()}">{ld}{_analytics()}
 </head><body>{nav()}<main>{body}</main>{foot()}</body></html>"""
 
 
